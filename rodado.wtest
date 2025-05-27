@@ -1,0 +1,98 @@
+import rodado.*
+import colores.*
+
+describe "test 2 dependencias"{
+    const deportes = new Dependencia(cantidadDeEmpleados = 45)
+    const cultura = new Dependencia(cantidadDeEmpleados = 31)
+    const cachito = new RodadoCorsa(color = rojo)
+    method initialize(){
+        deportes.agregarAFlota(cachito) 
+        deportes.agregarAFlota(new RodadoCorsa(color = azul)) 
+        deportes.agregarAFlota(new RodadoCorsa(color = verde)) 
+        deportes.agregarAFlota(new RodadoKwid(tieneTanqueAdicional = true)) 
+        deportes.agregarAFlota(new AutoEspecial(capacidad = 5, velocidadMaxima = 160, peso = 1200, color = beige)) 
+
+        cultura.agregarAFlota(cachito) 
+        cultura.agregarAFlota(new RodadoKwid(tieneTanqueAdicional = true) ) 
+        cultura.agregarAFlota(new RodadoKwid(tieneTanqueAdicional = true) ) 
+        cultura.agregarAFlota(new RodadoKwid(tieneTanqueAdicional = false) ) 
+        trafic.cambiarInterior(popular)
+        trafic.cambiarMotor(bataton)
+        cultura.agregarAFlota(trafic) 
+    }
+
+    test "Peso total de deportes es 6450"{
+        assert.equals(6450, deportes.pesoTotal())
+    }
+    test "Peso total de cultura es 10700"{
+        assert.equals(10700, cultura.pesoTotal())
+    }
+    test "Deportes esta bien equipada"{
+        assert.that(deportes.estaBienEquipada())
+    }
+    test "Cultura no esta bien equipada"{
+        assert.notThat(cultura.estaBienEquipada())
+    }
+
+    test "Capacidad total de azul en Deportes es de 7"{
+        assert.equals(7, deportes.capacidadTotalEnColor(azul))
+    }
+    test "Capacidad total de azul en Cultura es de 10"{
+        assert.equals(10, cultura.capacidadTotalEnColor(azul))
+    }
+
+    test "El color del rodado mas rapido en Deportes es el beige"{
+        assert.equals(beige, deportes.colorDelRodadoMasRapido())
+    }
+    test "El color del rodado mas rapido en Cultura es el rojo"{
+        assert.equals(rojo, cultura.colorDelRodadoMasRapido())
+    }
+
+    test "Deportes es grande"{
+        assert.that(deportes.esGrande())
+    }
+    test "Cultura no es grande"{
+        assert.notThat(cultura.esGrande())
+    }
+
+    test "La capacidad faltante de deportes es 25"{
+        assert.equals(25, deportes.capacidadFaltante())
+    }
+    test "La capacidad faltante de cultura es 5"{
+        assert.equals(5, cultura.capacidadFaltante())
+    }
+    
+}
+
+describe "Pedidos"{
+    const cachito = new RodadoCorsa(color = rojo)
+    const pedido = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 8, cantidadDePasajeros = 4, coloresIncompatibles=[azul,negro])
+    const dependencia = new Dependencia(cantidadDeEmpleados = 45)
+    test "Cachito puede satisfacer el pedido"{
+        assert.that(pedido.puedeSerSatisfecho(cachito))
+    }
+    test "Si se agrega rojo a coloresIncompatibles, cachito deja de satisfacer el pedido"{
+        pedido.coloresIncompatibles().add(rojo)
+        assert.notThat(pedido.puedeSerSatisfecho(cachito))
+    }
+    test "Si se cambia el tiempo a 6 horas, cachito deja de satisfacer el pedido"{
+        pedido.tiempoMaximo(6)
+        assert.notThat(pedido.puedeSerSatisfecho(cachito))
+    }
+
+    method initialize(){
+        dependencia.agregarPedido(pedido)
+        dependencia.agregarAFlota(cachito)
+    }
+    test "Los pasajeros totales en pedidos son 4"{
+        assert.equals(4, dependencia.pasajerosTotalesEnPedidos())
+    }
+    test "El color incompatible es el negro"{
+        assert.that(dependencia.colorIncompatibleEnPedidos(negro))
+    }
+    test "Se agrega rojo a coloresIncompatibles del pedido, el pedido es de los pedidos que no pueden ser satisfechos"{
+        pedido.coloresIncompatibles().add(rojo)
+        assert.that(dependencia.pedidosInstatisfechos().contains(pedido))
+    }
+}
+
